@@ -1,17 +1,21 @@
-const express = require("express")
-const app = express()
-const dotenv = require("dotenv")
+const express = require("express");
+const app = express();
 
-dotenv.config()
+require("dotenv").config("./src/.env");
 
+require("./config/database");
 
-app.use(express.json({ extended: false }));
+const expresGraphQl = require("express-graphql").graphqlHTTP;
+const schema = require("./graphql/schema");
+const resolver = require("./graphql/resolver");
 
-const userRoute = require("./routes/user")
+app.use(
+  "/graphql",
+  expresGraphQl({
+    schema: schema,
+    rootValue: resolver,
+    graphiql: true,
+  })
+);
 
-require("./config/db")
-
-app.use(userRoute)
-
-
-module.exports = app
+module.exports = app;
